@@ -4,6 +4,8 @@ Repository for AMRC & Dassault Systemes collaboration around "Verification and V
 
 Arduino code for running physical system among other files.
 
+![FixedWing](/images/FixedWing.png)
+
 ## Physical Components used:
 
 * Main controller - Arduino UNO 
