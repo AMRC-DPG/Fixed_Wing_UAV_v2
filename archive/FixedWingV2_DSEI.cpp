@@ -1,3 +1,9 @@
+/*
+Script from FixedWing V2 that was demo'd at DSEI.
+No feedback from LSS but does move on command.
+All commands hard coded to match Unity animation.
+*/
+
 #include <Arduino.h>
 #include <LSS.h>
 #include <SoftwareSerial.h>
@@ -8,7 +14,6 @@ SoftwareSerial mySoftSerial(8, 9);
 #define LSS_BAUD	(LSS_DefaultBaud)
 // Choose the proper serial port for your platform
 #define LSS_SERIAL	(mySoftSerial)	// ex: Many Arduino boards
-
 #define USE_TIMER_1     true
 
 // These define's must be placed at the beginning before #include "AVR_Slow_PWM.h"
@@ -51,18 +56,14 @@ void TimerHandler()
 
 //////////////////////////////////////////////////////
 
-// You can assign pins here. Be carefull to select good pin to use or crash
+// FAN PWM Variables
 uint32_t PWM_Pin    = 11;
-
-// You can assign any interval for any timer here, in Hz
 float PWM_Freq   = 61.08f;   //1.0f;
-// You can assign any interval for any timer here, in microseconds
-uint32_t PWM_Period = 1000000 / PWM_Freq;
+uint32_t PWM_Period = 1000000 / PWM_Freq; // You can assign any interval for any timer here,
 
+// minimum duty cycle for fan to accept valid signal.
 float PWM_DutyCycle = 6.75;
-
 int incomingByte = 0;
-
 
 // Channel number used to identify associated channel
 int channelNum;
@@ -185,11 +186,6 @@ void loop() {
       else if (incomingByte == 5) {
         myLSS.moveT(900, 1000);
       }
-
     }
   }
-
-
-
 }
-

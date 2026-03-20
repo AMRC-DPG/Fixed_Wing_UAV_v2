@@ -19,3 +19,49 @@ Arduino code for running physical system among other files.
 * Fuse
 * Isolator
 * E-stop
+
+
+## Example JSON Outputs:
+
+Sample Live data JSON object, sent at 10hz
+
+```json
+{
+  "type": "live",
+  "fan": {
+    "pwm": 1100,
+    "rpm": 0
+  },
+  "servo": {
+    "pos": 89.8,
+    "rpm": 0,
+    "cur": 0,
+    "vol": 6291,
+    "tmp": 269,
+    "stat": 1
+  }
+}
+```
+
+Sample CFG JSON object, mostly static data sent at 1hz to confirm config changes:
+
+```json
+{
+  "type": "cfg",
+  "fan": {
+    "min": 1125,
+    "max": 1300
+  },
+  "servo": {
+    "model": "LSS-HT1",
+    "fw": "370",
+    "stiff": -2,
+    "hStiff": 2,
+    "acc": 2000,
+    "dec": 200,
+    "maxSpd": 0,
+    "led": 0,
+    "gyre": 1
+  }
+}
+```
