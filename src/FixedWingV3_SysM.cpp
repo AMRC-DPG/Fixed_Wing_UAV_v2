@@ -29,6 +29,9 @@ void handleServoCommand(const String& cmd);
 void handleConfigCommand(const String& cmd);
 void handleEmergencyStop();
 
+bool routine = false;
+bool horiz = false;
+
 // --- SERIAL SETUP ---
 // Ensure Switch in "XBee" mode, no jumpers on LSS sheild
 SoftwareSerial lssSerial(8, 9); // RX = D8, TX = D9
@@ -225,6 +228,11 @@ void processIncomingCommand(const String& cmd) {
   }
   else if (cmd == "STOP") {
     handleEmergencyStop();
+    routine = false;
+  }
+  else if (cmd == "LOOP") {
+    routine = true;
+    Serial.println(F("{\"info\":\"LOOP_ROUTINE_STARTED\"}"));
   }
   else {
     Serial.println(F("{\"warn\":\"UNKNOWN_COMMAND_FORMAT\"}"));
@@ -334,7 +342,7 @@ void loop() {
       case 4: lssSerial.print(F("#1QT\r")); break;
       case 5: lssSerial.print(F("#1Q\r"));  break;
 
-      // --- THE SLOW LOOP (Static Configs - 1Hz) ---
+        // --- THE SLOW LOOP (Static Configs - 1Hz) ---
       case 6:
         if (slowSequence == 0)      lssSerial.print(F("#1QAS\r"));
         else if (slowSequence == 1) lssSerial.print(F("#1QAH\r"));
@@ -375,8 +383,31 @@ void loop() {
 
   // LISTEN FOR LSS RESPONSES
   readLSSResponsesFast();
-}
 
+  // --- AUTOMATED SERVO SWEEP ROUTINE ---
+  static unsigned long lastRoutine = 0;
+
+  if (routine) {
+    // Triggers instantly on the first run (when lastRoutine is 0) or every 1000ms
+    if (millis() - lastRoutine >= 1000 || lastRoutine == 0) {
+      lastRoutine = millis();
+
+      if (horiz) {
+        handleServoCommand("S:0.0:500"); // Move back to 0
+        horiz = false;
+      }
+      else {
+        handleServoCommand("S:90.0:500"); // Move to 90 FIRST!
+        horiz = true;
+      }
+    }
+  }
+  else {
+    // When STOP is sent, reset the timer and orientation for the next run
+    lastRoutine = 0;
+    horiz = false;
+  }
+}
 // --- FAST NON-BLOCKING SERIAL PARSING ---
 void readLSSResponsesFast(){
   while (LSS_SERIAL.available()) {
@@ -394,7 +425,7 @@ void readLSSResponsesFast(){
   }
 }
 // Parses response from LSS queries for both live and config data
-void parseLSSResponseFast() {
+void parseLSSResponseFast(){
   // --- LIVE DATA ---
   if (strncmp(inputBuffer, "*1QD", 4) == 0)      servoPosition = atol(&inputBuffer[4]) / 10.0;
   else if (strncmp(inputBuffer, "*1QS", 4) == 0) servoRPM = atoi(&inputBuffer[4]) / 60;
