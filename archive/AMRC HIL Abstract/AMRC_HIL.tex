@@ -1,0 +1,75 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[affil-it]{authblk}
+\usepackage{glossaries}
+\usepackage{geometry}
+\usepackage{comment}
+\usepackage{textcomp}
+
+\geometry{
+left=0.5in,
+right=0.5in,
+top=1in,
+bottom=1in
+}
+
+%opening
+\title{Substituting complex behaviour descriptions via \acrlong{hil} integration with \acrshort{sysml} system models}
+\date{}
+\author[1]{Ethan Spall}
+\author[2]{Robert Stacey}
+
+\affil[1]{Dassault Syst\`emes}
+\affil[2]{\acrfull{amrc} Sheffield}
+
+\newacronym{amrc}{AMRC}{Advanced Manufacturing Research Centre}
+\newacronym{hil}{HIL}{Hardware-in-the-Loop}
+\newacronym{se}{SE}{Systems Engineering}
+\newacronym{mbse}{MBSE}{Model-Based \acrlong{se}}
+\newacronym{idat}{IDAT}{Inspection, Demonstration, Analysis \& Testing}
+\newacronym{sysml}{SysML}{Systems Modelling Language}
+\newacronym{uav}{UAV}{Unmanned Aerial Vehicle}
+\newacronym{json}{JSON}{Javascript Object Notation}
+
+\begin{document}
+
+\maketitle
+\pagenumbering{gobble}
+\begin{abstract}
+This paper describes an approach used to integrate a 3rd party subsystem into a high level \acrshort{mbse} description of a reactive behavioural system architecture. The reactive behavioural architecture is defined using \acrfull{sysml} within the CATIA Magic tool-set. The physical hardware behaviour was not replicated as part of the \acrshort{mbse} model but extracted through changes in measured values/parameters of a subsystem over time in response to inputs from simulated behavioural models of connecting subsystems. This approach enabled simulation of a subsystem which has complex interactions which are unfeasible to capture in a model in it's entirety. Bidirectional communication was established to complete a feedback loop and the overall simulation was evaluated using a test harness to determine conformance to key requirements. The state of the hardware was measured through internal sensors which was passed back to a test harness established in the model for evaluation.
+
+For testing, A prototype, scale lift system of an \acrshort{uav} was used as the subsystem for integration into the behavioural architecture that interacts with a simulated control system. An abstracted behavioural model of the subsystem was initially defined to provide the context for the design and integration of an appropriate control system that would be controlling a \acrshort{uav}. As the subsystem has a fluid dynamic interaction with the outside environment, this would be infeasible to attempt to model using \acrshort{sysml} and was therefore deemed appropriately complex for the purposes of this paper. This paper tested the feasibility of substituting existing hardware for a detailed behavioural model description and successfully integrating with adjoining purely modelled subsystems.
+
+This paper presents the considerations and requirements that were necessary to enable integration of hardware into a higher level of abstraction model. The paper describes the overall simulation process as well as limitations and use cases for this approach.
+\end{abstract}
+
+\newpage
+\begin{comment}
+%\textsuperscript{\texttrademark}
+\pagenumbering{arabic}
+\section{Introduction}
+The behaviour of a system is a fundamental characteristic that is not always clear when modelled. Capturing the system behaviour in a suitable format is essential for all stages of system development. Creating an accurate and complete description of system behaviour is not always possible due to the level of complexity of a system which necessitates the need for abstraction. Due to this abstraction, emergent behaviour that is present due to complex interactions is often not modelled entirely. Further, it is often not cost effective to reverse-engineer system behaviour for development of connected systems. This paper proposes an experimental method to integrate physical hardware into an \acrfull{mbse} environment producing a \acrfull{hil} model that can be used for further system development. Experimental application of this method showed that it was possible to successfully integrate physical hardware into an \acrshort{mbse} environment using \acrlong{hil} and that future application is possible.
+\section{What is System Behaviour}
+\section{What is emergent behaviour}
+\section{What is \acrshort{hil}}
+\section{Existing \acrshort{hil}}
+\section{Methods of verification}
+\acrfull{idat}
+\section{Validation of models for future development}
+\section{Process flow}
+\section{Experimental Setup}
+\subsection{Objectives of experiment}
+\subsection{Method of data collection}
+\subsection{Model and system created}
+\subsection{Model Validation}
+\subsection{Physical hardware setup}
+\subsection{data collection points}
+\section{Results}
+\section{Conclusions \& Analysis}
+\section{Further work}
+\section{Acknowledgements}
+
+\appendix
+\section{Models Created}
+\end{comment}
+\end{document}
