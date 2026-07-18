@@ -252,44 +252,23 @@ void loop() {
 
   // TWO-TIER SEQUENCER (Fires every 15ms)
   static unsigned long lastQuery = 0;
-  
-  //keep track of which LSS parameter to query
-  int querySequence = 0; // live telemetry (0-5)
+  static int iteration = 0;
 
   if (millis() - lastQuery > 15)
   {
     lastQuery = millis();
 
-    switch (querySequence)
+    // --- THE FAST LOOP (Live Telemetry - 10Hz) ---
+    switch(iteration)
     {
-      // --- THE FAST LOOP (Live Telemetry - 10Hz) ---
-      case 0:
-        queryTelemetry("#1QD\r",QD, 4);
-        querySequence++;
-        break;
-      case 1:
-        queryTelemetry("#1QS\r",QS, 4);
-        querySequence++;
-        break;
-      case 2:
-        queryTelemetry("#1QC\r",QC, 4);
-        querySequence++;
-        break;
-      case 3:
-        queryTelemetry("#1QV\r",QV, 4);
-        querySequence++;
-        break;
-      case 4:
-        queryTelemetry("#1QT\r",QT, 4);
-        querySequence++;
-        break;
-      case 5:
-        queryTelemetry("#1Q\r",QSS, 3);
-        querySequence++;
-        break;
-
-      // --- THE SLOW LOOP (Static Configs - 1Hz) ---
+      case 0: queryTelemetry("#1QD\r",QD, 4); break;
+      case 1: queryTelemetry("#1QS\r",QS, 4); break;
+      case 2: queryTelemetry("#1QC\r",QC, 4); break;
+      case 3: queryTelemetry("#1QV\r",QV, 4); break;
+      case 4: queryTelemetry("#1QT\r",QT, 4); break;
+      case 5: queryTelemetry("#1Q\r",QSS, 3); break;
       case 6:
+      // --- THE SLOW LOOP (Static Configs - 1Hz) ---
         queryTelemetry("#1QAS\r", QAS, 5);
         queryTelemetry("#1QAH\r", QAH, 5);
         queryTelemetry("#1QAA\r", QAA, 5);
@@ -300,8 +279,9 @@ void loop() {
         queryTelemetry("#1QAR\r", QAR, 5);
         queryTelemetry("#1QMS\r", QMS, 5);
         queryTelemetry("#1QF\r", QF, 4);
-        querySequence = 0;
+      break;
     }
+    iteration > 6 ? iteration = 0 : iteration++;
   }
 }
 
