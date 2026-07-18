@@ -38,7 +38,7 @@ SoftwareSerial lssSerial(8, 9); // RX = D8, TX = D9
 
 #define ID_OFFSET 24
 long telemMessage;
-//Limit to 16 bits data identifier
+//Limit to 16 bits data identifier, we should be good for a while
 #define QD 0X1
 #define QS 0x2
 #define QC 0x3
@@ -248,7 +248,7 @@ void queryTelemetry (char** query, int typeMsg, int bufferOffset)
 
 void loop() {
   // CHECK FOR DYNAMIC PC COMMANDS
-  Serial.available() ? processIncomingCommand(Serial.read()); : continue;
+  Serial.available() ? processIncomingCommand(Serial.read()); : continue; //This will only run if we have serial data available
 
   // TWO-TIER SEQUENCER (Fires every 15ms)
   static unsigned long lastQuery = 0;
