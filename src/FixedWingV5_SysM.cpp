@@ -23,18 +23,18 @@ SoftwareSerial lssSerial(8, 9); // RX = D8, TX = D9
 #define LSS_SERIAL    (lssSerial)
 
 // --- HARDWARE PWM SETUP (TIMER 1 @ 50Hz, 0.5us resolution) ---
-#define PWM_Pin 10;   // MUST be Pin 10 for Timer 1 (OC1B)
-#define TOP_VAL 39999; // Yields 50Hz with Prescaler 8 on 16MHz clock
+#define PWM_Pin 10   // MUST be Pin 10 for Timer 1 (OC1B)
+#define TOP_VAL 39999 // Yields 50Hz with Prescaler 8 on 16MHz clock
 
 // --- FAN SAFETY & ESTIMATION CONSTANTS ---
-#define ESC_ARM 1100; // 0% Throttle (1.1ms) - Arming
-#define FAN_MIN_SUSTAIN 1125; // Lowest speed Fan can maintain once spinning
-#define FAN_MIN_START 1136; // Minimum to break stiction
-#define ESC_TEST  1160; // Low test speed (1.2ms) ~ 0.86A
+#define ESC_ARM 1100 // 0% Throttle (1.1ms) - Arming
+#define FAN_MIN_SUSTAIN 1125 // Lowest speed Fan can maintain once spinning
+#define FAN_MIN_START 1136 // Minimum to break stiction
+#define ESC_TEST  1160 // Low test speed (1.2ms) ~ 0.86A
 //Increase this to enable faster speeds but stay below 10A current draw on power supply
-#define LAB_SAFE_MAX 1300; // LAB SAFE LIMIT (1.3ms) ~ 4.82A - 1300 safe from ceiling tile movement
-#define ESC_MAX 2000; // 100% Throttle (2.0ms) - Never run at this! as the power supply max is 10A
-#define MAX_LOADED_RPM  28000.0f; //max RPM val at 2ms
+#define LAB_SAFE_MAX 1300 // LAB SAFE LIMIT (1.3ms) ~ 4.82A - 1300 safe from ceiling tile movement
+#define ESC_MAX 2000 // 100% Throttle (2.0ms) - Never run at this! as the power supply max is 10A
+#define MAX_LOADED_RPM  28000.0f //max RPM val at 2ms
 
 #define ID_OFFSET 24
 long telemMessage;
@@ -159,7 +159,7 @@ void handleEmergencyStop() {
 void processIncomingCommand(long command) {
 
   unsigned int type = ((command & 0xFFFF0000) >> 0x10); //pulls the first 16 bits which can be used as identifier 
-  unsigned int value = ((command & 0xFFFF)) //Pulls the last 16 bits for values up to 65535
+  unsigned int value = ((command & 0xFFFF)); //Pulls the last 16 bits for values up to 65535
 
   switch(type)
   {
@@ -191,7 +191,7 @@ void processIncomingCommand(long command) {
       }
       break;
     case 7: //case 7 handles AD config
-      if (value >= 10 && _INLINE_VARIABLES_SUPPORTED <= 10000)
+      if (value >= 10 && value <= 10000)
       {
         lssSerial.print(F("#1AD")); lssSerial.print(value); lssSerial.print(F("\r"));
       }
@@ -211,14 +211,15 @@ void processIncomingCommand(long command) {
 
 // --- FAST NON-BLOCKING SERIAL PARSING ---
 
-void queryTelemetry (char** query, int typeMsg, int bufferOffset)
+void queryTelemetry (const char* query, int typeMsg, int bufferOffset)
 {
-  #define MAX_BUFFER 48; // Increased slightly for longer String replies
+  #define MAX_BUFFER 48 // Increased slightly for longer String replies
   char inputBuffer[MAX_BUFFER];
   byte bufferIndex = 0;
   int incomingByte = 0;
+  long dataMsg = 0;
 
-  lssSerial.print(F(query));
+  lssSerial.print(query);
   while (LSS_SERIAL.available())
   {
     char inChar = (char)LSS_SERIAL.read();
@@ -236,11 +237,11 @@ void queryTelemetry (char** query, int typeMsg, int bufferOffset)
   
   if(typeMsg == QSS && isDigit(inputBuffer[3]))
   {
-    long dataMsg = (typeMsg << ID_OFFSET) | (inputBuffer[bufferOffset] - '0');
+    dataMsg = (typeMsg << ID_OFFSET) | (inputBuffer[bufferOffset] - '0');
   }
   else
   {
-    long dataMsg = (typeMsg << ID_OFFSET) | atoi(&inputBuffer[bufferOffset]) 
+    dataMsg = (typeMsg << ID_OFFSET) | atoi(&inputBuffer[bufferOffset]); 
   }
   
   Serial.println(dataMsg);
@@ -248,7 +249,7 @@ void queryTelemetry (char** query, int typeMsg, int bufferOffset)
 
 void loop() {
   // CHECK FOR DYNAMIC PC COMMANDS
-  Serial.available() ? processIncomingCommand(Serial.read()); : continue; //This will only run if we have serial data available
+  if(Serial.available()){processIncomingCommand(Serial.read());} //This will only run if we have serial data available
 
   // TWO-TIER SEQUENCER (Fires every 15ms)
   static unsigned long lastQuery = 0;
