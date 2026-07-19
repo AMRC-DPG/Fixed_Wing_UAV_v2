@@ -73,10 +73,6 @@ void setup() {
   // Setup LSS SoftwareSerial at the safe speed
   LSS_SERIAL.begin(LSS_BAUD);
 
-  Serial.println(F("\n--- SYSTEM BOOTING ---"));
-  Serial.println(F("High-Res Hardware PWM: Active"));
-  Serial.println(F("Safety Governor: Active (Max 1300 microseconds)"));
-
   // Configure Timer 1 for 50Hz Hardware PWM
   pinMode(PWM_Pin, OUTPUT);
   TCCR1A = 0;
@@ -98,8 +94,6 @@ void setup() {
   LSS_SERIAL.print(F("#1AD600\r"));  // Angular Decel
   LSS_SERIAL.print(F("#1AS-2\r"));   // Angular Stiffness
   LSS_SERIAL.print(F("#1AH2\r"));    // Holding Stiffness
-
-  Serial.println(F("System Armed and Ready."));
 }
 
 /* =================================================================================
