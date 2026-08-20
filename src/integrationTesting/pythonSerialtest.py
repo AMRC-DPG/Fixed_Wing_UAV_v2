@@ -5,7 +5,7 @@ import serial.threaded
 import time
 
 def main():
-    with ser = serial.Serial('COM3', 115200):
+    with serial.Serial('COM3', 115200) as ser:
         while True:
             x = ser.read(4) #read 4 bytes
             print(x)
