@@ -1,8 +1,26 @@
 import socket
-import json
 
 HOST = ''
 PORT = 5001
+
+QD = 0x1
+QS = 0x2
+QC = 0x3
+QV = 0x4
+QT = 0x5
+QSS = 0x6
+QAS = 0x7
+QAH = 0x8
+QAA = 0x9
+QAD = 0xA
+QSD = 0xB
+QLED = 0xC
+QG = 0xD
+QMS = 0xE
+QF = 0xF
+QAR = 0x10
+
+ID_OFFSET = 24
 
 def makeFanCmd(value):
      if value < 0: value = 0
@@ -66,17 +84,11 @@ try:
             if not data: break
             if data == None: break
             #print(data)
-            #message = json.load(data)
-            try:
-                obj = json.loads(data)
-                #print(obj.get("fan").get("pwm"))
             
-                if obj.get("type") == "live": mapLiveData(obj)
-                elif obj.get("type") == "cfg": mapCfgData(obj)
-                else: continue
-            except Exception as e:
-                 continue
-            
+            msgHeader = (data >> ID_OFFSET)
+
+            if
+
             if ALH.getValue(self, "ready"):
                 commandType = ALH.getValue(self, "type")
                 value = ALH.getValue(self, "value")
