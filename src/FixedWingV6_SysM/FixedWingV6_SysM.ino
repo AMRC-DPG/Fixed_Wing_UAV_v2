@@ -126,69 +126,6 @@ void setFanMicroseconds(uint16_t microseconds) {
   OCR1B = currentFanPWM * 2;
 }
 
-void handleServoCommand(uint16_t value) {
- {
-    unsigned int targetTime = (value&&0xFF00) >> 0x10; //Get the first half bytw between 9-16
-    unsigned int lssPosition = (value&&0xFF)* 10; //Get the first 8 bits which covers 0 to 90
-
-    constrain(lssPosition, 0, 900); //Constrain the value to what we need
-    //Need to check if that 900 value makes sense here
-
-    lssSerial.print(F("#1D"));
-    lssSerial.print(lssPosition);
-    lssSerial.print(F("T"));
-    lssSerial.print(targetTime);
-    lssSerial.print(F("\r"));
-  }
-}
-
-void processIncomingCommand(long command) {
-
-  unsigned int type = ((command & 0xFFFF0000) >> 0x10); //pulls the first 16 bits which can be used as identifier 
-  unsigned int value = ((command & 0xFFFF)); //Pulls the last 16 bits for values up to 65535
-
-  switch(type)
-  {
-    case 1: //case 1 handles fans
-      setFanMicroseconds(value);
-      break;
-    case 2: //case 2 handles servo
-      handleServoCommand(value);
-      break;
-    case 3: //case 3 handles ESTOP
-      setFanMicroseconds(ESC_ARM);
-      lssSerial.print(F("#1L\r"));
-      break;
-    case 4: //case 4 handles AS config
-      if (value >= -4 && value <= 4)
-      {
-      lssSerial.print(F("#1AS")); lssSerial.print(value); lssSerial.print(F("\r"));
-      }
-      break;
-    case 5: //case 5 handles AH Config
-      if(value >= -10 && value <= 10)
-      {
-        lssSerial.print(F("#1AH")); lssSerial.print(value); lssSerial.print(F("\r"));
-      }
-      break;
-    case 6: //case 6 handles AA config
-      if (value >= 10 && value <= 10000)
-      {
-        lssSerial.print(F("#1AA")); lssSerial.print(value); lssSerial.print(F("\r"));
-      }
-      break;
-    case 7: //case 7 handles AD config
-      if (value >= 10 && value <= 10000)
-      {
-        lssSerial.print(F("#1AD")); lssSerial.print(value); lssSerial.print(F("\r"));
-      }
-      break;
-
-    default:
-      break;
-  }
-}
-
 /* =================================================================================
  * MAIN LOOP
  * 1. Checks PC commands and processing
@@ -234,10 +171,8 @@ void queryTelemetry (const char* query, int typeMsg, int bufferOffset)
   Serial.println(dataMsg);
 }
 
-void loop() {
-  // CHECK FOR DYNAMIC PC COMMANDS
-  if(Serial.available()){processIncomingCommand(Serial.parseInt());} //If data on the serial buffer, read and parse as a long int then send to process Incoming Command
-
+void loop()
+{
   // TWO-TIER SEQUENCER (Fires every 15ms)
   static unsigned long lastQuery = 0;
   static int iteration = 0;
@@ -273,3 +208,63 @@ void loop() {
   }
 }
 
+void serialEvent() //This will be called once per loop and the overhead is present based upon 
+{
+  while(Serial.available())
+  {
+    long command = Serial.parseInt();
+    unsigned int type = ((command & 0xFFFF0000) >> 0x10); //pulls the first 16 bits which can be used as identifier 
+    unsigned int value = ((command & 0xFFFF)); //Pulls the last 16 bits for values up to 65535
+
+    switch(type)
+    {
+      case 1: //case 1 handles fans
+        setFanMicroseconds(value);
+        break;
+      case 2: //case 2 handles servo
+        unsigned int targetTime = (value&&0xFF00) >> 0x10; //Get the first half bytw between 9-16
+        unsigned int lssPosition = (value&&0xFF)* 10; //Get the first 8 bits which covers 0 to 90
+
+        constrain(lssPosition, 0, 900); //Constrain the value to what we need
+        //Need to check if that 900 value makes sense here
+
+        lssSerial.print(F("#1D"));
+        lssSerial.print(lssPosition);
+        lssSerial.print(F("T"));
+        lssSerial.print(targetTime);
+        lssSerial.print(F("\r"));
+        break;
+      case 3: //case 3 handles ESTOP
+        setFanMicroseconds(ESC_ARM);
+        lssSerial.print(F("#1L\r"));
+        break;
+      case 4: //case 4 handles AS config
+        if (value >= -4 && value <= 4)
+        {
+        lssSerial.print(F("#1AS")); lssSerial.print(value); lssSerial.print(F("\r"));
+        }
+        break;
+      case 5: //case 5 handles AH Config
+        if(value >= -10 && value <= 10)
+        {
+          lssSerial.print(F("#1AH")); lssSerial.print(value); lssSerial.print(F("\r"));
+        }
+        break;
+      case 6: //case 6 handles AA config
+        if (value >= 10 && value <= 10000)
+        {
+          lssSerial.print(F("#1AA")); lssSerial.print(value); lssSerial.print(F("\r"));
+        }
+        break;
+      case 7: //case 7 handles AD config
+        if (value >= 10 && value <= 10000)
+        {
+          lssSerial.print(F("#1AD")); lssSerial.print(value); lssSerial.print(F("\r"));
+        }
+        break;
+
+      default:
+        break;
+    }
+  }
+}
