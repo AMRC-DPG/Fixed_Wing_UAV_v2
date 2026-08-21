@@ -3,7 +3,7 @@
  * DESCRIPTION: Provides high-resolution hardware PWM control for an EDF,
  * dynamic safety factors, and non-blocking JSON telemetry output
  * for a Lynxmotion Smart Servo (LSS) via serial interface.
- * =================================================================================
+ * =================================================================================c:\Users\ESL8\Documents\GitHub\Fixed_Wing_UAV_v2\src\FixedWingV6_SysM\FixedWingV6_SysM_Dummy.ino
  * COMMAND PROTOCOLS (Sent via PC Serial @ 115200 Baud, LSS at 38400 Baud):
  * - Fan Control:    "F:<PWM>"       (e.g., "F:1200" sets fan to 1200us)
  * - Servo Control:  "S:<DEG>:<MS>"  (e.g., "S:45.5:1000" moves to 45.5° in 1 sec)

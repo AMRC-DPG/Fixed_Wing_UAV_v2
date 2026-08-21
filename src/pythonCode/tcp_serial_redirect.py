@@ -16,8 +16,12 @@ import time
 class SerialToNet(serial.threaded.Protocol):
     """serial->socket"""
 
+    f = 0
+    
     def __init__(self):
         self.socket = None
+        s2ipLogName = "S2IP_" + str(time.time()) + ".txt"
+        self.f = open(s2ipLogName, 'w', encoding="utf-8")
 
     def __call__(self):
         return self
@@ -25,7 +29,12 @@ class SerialToNet(serial.threaded.Protocol):
     def data_received(self, data):
         if self.socket is not None:
             self.socket.sendall(data)
+            #print("Serial to IP: ", data)
+            logString = str(time.time()) + " : " + str(data) + "\n"
+            self.f.write(logString)
 
+    def __del__(self):
+        self.f.close()
 
 if __name__ == '__main__':  # noqa
     import argparse
@@ -198,13 +207,18 @@ it waits for the next connect.
             try:
                 ser_to_net.socket = client_socket
                 # enter network <-> serial loop
+                ip2sLogName = "IP2S_" + str(time.time()) + ".txt"
+                
                 while True:
                     try:
                         data = client_socket.recv(1024)
-                        print("Received this data: ", data)
                         if not data:
                             break
+                        print("IP to Serial: ", data)
                         ser.write(data)                 # get a bunch of bytes and send them
+                        logstring = str(time.time()) + " : " + str(data) + "\n"
+                        with open(ip2sLogName, "a", encoding="UTF-8") as g:
+                            g.write(logstring)
                     except socket.error as msg:
                         if args.develop:
                             raise
@@ -225,7 +239,8 @@ it waits for the next connect.
                 if args.client and not intentional_exit:
                     time.sleep(5)  # intentional delay on reconnection as client
     except KeyboardInterrupt:
-        pass
+        sys.stderr.write('\n--- exit ---\n')
+        serial_worker.stop()
+        sys.exit(130)
 
-    sys.stderr.write('\n--- exit ---\n')
-    serial_worker.stop()
+    

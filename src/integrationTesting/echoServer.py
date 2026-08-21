@@ -40,7 +40,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 
                 
                 if counter == 25:
-                    #counter = 0
                     if not verticalFlag:
                         degrees = 0
                         verticalFlag = True
@@ -56,15 +55,15 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 if counter >= 50:
                     counter = 0
                     if not fanRunning:
-                        fanSetting = 1150
+                        fanSetting = 1200
                         fanCommand = "F:"+ str(fanSetting) #1100 = 0%, 1300 = 100%
                         conn.sendall(fanCommand.encode())
                         fanRunning = True
                         print("Fan Command: ", fanCommand)
                     elif fanRunning:
-                        fanSetting = 1000
+                        fanSetting = 1100
                         fanCommand = "F:"+ str(fanSetting) #1100 = 0%, 1300 = 100%
-                        conn.sendall(fanCommand.encode())
+                        conn.sendall(fanOff.encode())
                         fanRunning = False
                         print("Fan Command: ", fanCommand)
                     else:
